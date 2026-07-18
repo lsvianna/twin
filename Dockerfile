@@ -4,7 +4,7 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     PIP_NO_CACHE_DIR=1 \
     GRADIO_SERVER_NAME=0.0.0.0 \
-    GRADIO_SERVER_PORT=7860
+    GRADIO_SERVER_PORT=3000
 
 WORKDIR /app
 
@@ -23,9 +23,9 @@ RUN useradd --create-home --shell /usr/sbin/nologin appuser \
 
 USER appuser
 
-EXPOSE 7860
+EXPOSE 3000
 
 HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
-    CMD python -c "import urllib.request; urllib.request.urlopen('http://127.0.0.1:7860/', timeout=5).read()"
+    CMD python -c "import urllib.request; urllib.request.urlopen('http://127.0.0.1:3000/', timeout=5).read()"
 
 CMD ["python", "app.py"]
