@@ -9,9 +9,6 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-ENV GRADIO_SERVER_NAME=0.0.0.0
-ENV GRADIO_SERVER_PORT=3000
-
 EXPOSE 3000
 
-CMD ["python", "app.py"]
+CMD ["streamlit", "run", "app.py", "--server.address=0.0.0.0", "--server.port=3000"]

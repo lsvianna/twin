@@ -1,5 +1,6 @@
 requests
-gradio
+streamlit
 pypdf
 openai
+openai-agents
 python-dotenv

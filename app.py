@@ -1,39 +1,64 @@
-from openai import OpenAI
-from context import TWIN_SYSTEM_PROMPT
-from tools import tools, handle_tool_calls
-from styles import CSS, JS, EXAMPLES
+import asyncio
+import os
+
+import streamlit as st
+from agents import Agent, OpenAIChatCompletionsModel, Runner, set_tracing_disabled
 from dotenv import load_dotenv
-import gradio as gr
+from openai import AsyncOpenAI
+
+from context import PROMPT_SISTEMA_GEMEO
+from tools import ferramentas
 
 load_dotenv(override=True)
+set_tracing_disabled(disabled=True)
 
-MODEL_NAME = "gpt-5.4-mini"
-
-openai = OpenAI()
-
-system = [{"role": "system", "content": TWIN_SYSTEM_PROMPT}]
-
-def chat(message, history):
-    if openai is None:
-        return "OPENAI_API_KEY is not configured on the server."
-
-    messages = system + history + [{"role": "user", "content": message}]
-    response = openai.chat.completions.create(model=MODEL_NAME, messages=messages, tools=tools)
-    while response.choices[0].finish_reason == "tool_calls":
-        message = response.choices[0].message
-        tool_calls = message.tool_calls
-        results = handle_tool_calls(tool_calls)
-        messages.append(message)
-        messages.extend(results)
-        response = openai.chat.completions.create(model=MODEL_NAME, messages=messages, tools=tools)
-    return response.choices[0].message.content
+URL_BASE_GEMINI = os.getenv("GEMINI_BASE_URL")
+CHAVE_API_GEMINI = os.getenv("GEMINI_API_KEY")
+NOME_MODELO = "gemini-3.5-flash"
 
 
-if __name__ == "__main__":
-   gr.ChatInterface(
-        chat,
-        examples=EXAMPLES,
-        title="Digital Twin",
-        description="Talk to my AI twin about my career",
-        chatbot=gr.Chatbot(show_label=False),
-    ).launch(css=CSS, js=JS, theme=gr.themes.Base())
+async def conversar(mensagem, historico):
+    if not URL_BASE_GEMINI or not CHAVE_API_GEMINI:
+        return "Configure GEMINI_BASE_URL e GEMINI_API_KEY para conversar comigo."
+
+    cliente_gemini = AsyncOpenAI(base_url=URL_BASE_GEMINI, api_key=CHAVE_API_GEMINI)
+    modelo_gemini = OpenAIChatCompletionsModel(
+        model=NOME_MODELO,
+        openai_client=cliente_gemini,
+    )
+    agente = Agent(
+        name="Gêmeo Digital",
+        instructions=PROMPT_SISTEMA_GEMEO,
+        model=modelo_gemini,
+        tools=ferramentas,
+    )
+    entrada = historico + [{"role": "user", "content": mensagem}]
+    resultado = await Runner.run(agente, entrada)
+    return resultado.final_output
+
+
+st.set_page_config(page_title="Gêmeo Digital", page_icon=":speech_balloon:")
+st.title("Gêmeo Digital")
+st.caption("Converse com meu gêmeo de IA sobre minha carreira")
+
+if "mensagens" not in st.session_state:
+    st.session_state.mensagens = []
+
+for item in st.session_state.mensagens:
+    with st.chat_message(item["role"]):
+        st.markdown(item["content"])
+
+mensagem_usuario = st.chat_input("Digite sua mensagem")
+if mensagem_usuario:
+    historico = st.session_state.mensagens.copy()
+    st.session_state.mensagens.append({"role": "user", "content": mensagem_usuario})
+
+    with st.chat_message("user"):
+        st.markdown(mensagem_usuario)
+
+    with st.chat_message("assistant"):
+        with st.spinner("Pensando..."):
+            resposta = asyncio.run(conversar(mensagem_usuario, historico))
+        st.markdown(resposta)
+
+    st.session_state.mensagens.append({"role": "assistant", "content": resposta})
