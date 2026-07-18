@@ -10,7 +10,7 @@ from tools import ferramentas
 load_dotenv(override=True)
 set_tracing_disabled(disabled=True)
 
-URL_BASE_GEMINI = os.getenv("GEMINI_BASE_URL")
+URL_BASE_GEMINI = "https://generativelanguage.googleapis.com/v1beta/openai/"
 CHAVE_API_GEMINI = os.getenv("GEMINI_API_KEY")
 NOME_MODELO = "gemini-3.5-flash"
 
