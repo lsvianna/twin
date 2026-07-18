@@ -14,7 +14,6 @@ openai = OpenAI()
 system = [{"role": "system", "content": TWIN_SYSTEM_PROMPT}]
 
 def chat(message, history):
-    openai = get_openai_client()
     if openai is None:
         return "OPENAI_API_KEY is not configured on the server."
 
