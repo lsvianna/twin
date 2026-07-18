@@ -3,22 +3,15 @@ from context import TWIN_SYSTEM_PROMPT
 from tools import tools, handle_tool_calls
 from styles import CSS, JS, EXAMPLES
 from dotenv import load_dotenv
-import os
 import gradio as gr
 
 load_dotenv(override=True)
 
 MODEL_NAME = "gpt-5.4-mini"
 
+openai = OpenAI()
+
 system = [{"role": "system", "content": TWIN_SYSTEM_PROMPT}]
-
-
-def get_openai_client():
-    api_key = os.getenv("OPENAI_API_KEY")
-    if not api_key:
-        return None
-    return OpenAI(api_key=api_key)
-
 
 def chat(message, history):
     openai = get_openai_client()
@@ -38,13 +31,10 @@ def chat(message, history):
 
 
 if __name__ == "__main__":
-    server_name = os.getenv("GRADIO_SERVER_NAME", "0.0.0.0")
-    server_port = int(os.getenv("PORT", os.getenv("GRADIO_SERVER_PORT", "3000")))
-
-    gr.ChatInterface(
+   gr.ChatInterface(
         chat,
         examples=EXAMPLES,
         title="Digital Twin",
         description="Talk to my AI twin about my career",
         chatbot=gr.Chatbot(show_label=False),
-    ).launch(css=CSS, js=JS, theme=gr.themes.Base(), server_name=server_name, server_port=server_port)
+    ).launch(css=CSS, js=JS, theme=gr.themes.Base())
