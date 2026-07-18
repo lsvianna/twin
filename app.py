@@ -1,40 +1,28 @@
 import asyncio
 import os
+import smtplib
+from email.message import EmailMessage
 
 import streamlit as st
-from agents import Agent, OpenAIChatCompletionsModel, Runner, set_tracing_disabled
-from dotenv import load_dotenv
-from openai import AsyncOpenAI
 
-from context import PROMPT_SISTEMA_GEMEO
-from tools import ferramentas
-
-load_dotenv(override=True)
-set_tracing_disabled(disabled=True)
-
-URL_BASE_GEMINI = os.getenv("GEMINI_BASE_URL")
-CHAVE_API_GEMINI = os.getenv("GEMINI_API_KEY")
-NOME_MODELO = "gemini-3.5-flash"
+from tools import configurar_envio_email
 
 
-async def conversar(mensagem, historico):
-    if not URL_BASE_GEMINI or not CHAVE_API_GEMINI:
-        return "Configure GEMINI_BASE_URL e GEMINI_API_KEY para conversar comigo."
+def enviar_email(assunto, conteudo):
+    mensagem = EmailMessage()
+    mensagem["From"] = os.getenv("GMAIL_EMAIL")
+    mensagem["To"] = os.getenv("GMAIL_EMAIL", os.getenv("GMAIL_EMAIL"))
+    mensagem["Subject"] = assunto
+    mensagem.set_content(conteudo)
 
-    cliente_gemini = AsyncOpenAI(base_url=URL_BASE_GEMINI, api_key=CHAVE_API_GEMINI)
-    modelo_gemini = OpenAIChatCompletionsModel(
-        model=NOME_MODELO,
-        openai_client=cliente_gemini,
-    )
-    agente = Agent(
-        name="Gêmeo Digital",
-        instructions=PROMPT_SISTEMA_GEMEO,
-        model=modelo_gemini,
-        tools=ferramentas,
-    )
-    entrada = historico + [{"role": "user", "content": mensagem}]
-    resultado = await Runner.run(agente, entrada)
-    return resultado.final_output
+    with smtplib.SMTP_SSL("smtp.gmail.com", 465) as servidor:
+        servidor.login(os.getenv("GMAIL_EMAIL"), os.getenv("GMAIL_SENHA"))
+        servidor.send_message(mensagem)
+
+
+configurar_envio_email(enviar_email)
+
+from agentes import conversar
 
 
 st.set_page_config(page_title="Gêmeo Digital", page_icon=":speech_balloon:")
