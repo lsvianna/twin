@@ -1,33 +1,10 @@
 import asyncio
-import os
-import smtplib
-from email.message import EmailMessage
-
 import streamlit as st
-
-from tools import configurar_envio_email
-
-
-def enviar_email(assunto, conteudo):
-    mensagem = EmailMessage()
-    mensagem["From"] = os.getenv("GMAIL_EMAIL")
-    mensagem["To"] = os.getenv("GMAIL_EMAIL", os.getenv("GMAIL_EMAIL"))
-    mensagem["Subject"] = assunto
-    mensagem.set_content(conteudo)
-
-    with smtplib.SMTP_SSL("smtp.gmail.com", 465) as servidor:
-        servidor.login(os.getenv("GMAIL_EMAIL"), os.getenv("GMAIL_SENHA"))
-        servidor.send_message(mensagem)
-
-
-configurar_envio_email(enviar_email)
-
 from agentes import conversar
 
-
-st.set_page_config(page_title="Gêmeo Digital", page_icon=":speech_balloon:")
-st.title("Gêmeo Digital")
-st.caption("Converse com meu gêmeo de IA sobre minha carreira")
+st.set_page_config(page_title="Leonardo Vianna", page_icon=":speech_balloon:")
+st.title("Leonardo Vianna")
+st.caption("Converse com meu gêmeo digital sobre minha carreira")
 
 if "mensagens" not in st.session_state:
     st.session_state.mensagens = []
