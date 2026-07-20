@@ -71,7 +71,7 @@ agente = Agent(
     model=modelo_gemini,
     tools=[envia_email]
 )
-print('Agente do gêmeo digital inicializado com sucesso!')
+
 
 async def conversar(mensagem, historico):
     entrada = historico + [{'role': 'user', 'content': mensagem}]
