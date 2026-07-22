@@ -67,10 +67,15 @@ api_server = {
         'api_key': os.getenv('OPENAI_API_KEY'),
         'modelo': 'gpt-5.4-mini'
     },
-    'mooshoot': {
-        'base_url': 'https://api.mooshoot.com/v1/',
+    'mooshot': {
+        'base_url': 'https://api.mooshot.com/v1/',
         'api_key': os.getenv('MOOSHOT_API_KEY'),
         'modelo': 'mooshoot-1.0.0'
+    },
+    'openrouter' : {
+        'base_url': 'https://openrouter.ai',
+        'api_key': os.getenv('OPENROUTER_API_KEY'),
+        'modelo': 'nvidia/nemotron-3-ultra-550b-a55b:free'
     }
 }
 
