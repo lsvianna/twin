@@ -56,19 +56,37 @@ Nunca invente respostas. Seja direto, objetivo e educado. Se não souber, diga q
 Não forneça informações pessoais, como endereço ou telefone. Não produza respostas longas.
 """
 
-URL_BASE_GEMINI = 'https://generativelanguage.googleapis.com/v1beta/openai/'
-CHAVE_API_GEMINI = os.getenv('GEMINI_API_KEY')
-NOME_MODELO = 'gemini-3.5-flash'
+api_server = {
+    'gemini': {
+        'base_url': 'https://generativelanguage.googleapis.com/v1beta/openai/',
+        'api_key': os.getenv('GEMINI_API_KEY'),
+        'modelo': 'gemini-3.5-flash'
+    },
+    'openai': {
+        'base_url': 'https://api.openai.com/v1/',
+        'api_key': os.getenv('OPENAI_API_KEY'),
+        'modelo': 'gpt-5.4-mini'
+    },
+    'mooshoot': {
+        'base_url': 'https://api.mooshoot.com/v1/',
+        'api_key': os.getenv('MOOSHOT_API_KEY'),
+        'modelo': 'mooshoot-1.0.0'
+    }
+}
 
-cliente_gemini = AsyncOpenAI(base_url=URL_BASE_GEMINI, api_key=CHAVE_API_GEMINI)
-modelo_gemini = OpenAIChatCompletionsModel(
-    model=NOME_MODELO,
-    openai_client=cliente_gemini,
+api_service = os.getenv('API_SERVICE', 'gemini')
+config = api_server.get(api_service)
+
+cliente = AsyncOpenAI(base_url=config['base_url'], api_key=config['api_key'])
+modelo = OpenAIChatCompletionsModel(
+    model=config['modelo'],
+    openai_client=cliente,
 )
+
 agente = Agent(
     name="gemeo_digital",
     instructions=PROMPT_SISTEMA_GEMEO,
-    model=modelo_gemini,
+    model=modelo,
     tools=[envia_email]
 )
 
