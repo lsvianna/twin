@@ -75,7 +75,7 @@ api_server = {
     'openrouter' : {
         'base_url': 'https://openrouter.ai',
         'api_key': os.getenv('OPENROUTER_API_KEY'),
-        'modelo': 'nvidia/nemotron-3-ultra-550b-a55b:free'
+        'modelo': 'google/gemma-4-31b-it:free'
     }
 }
 
