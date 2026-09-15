@@ -7,7 +7,7 @@ load_dotenv(override=True)
 
 
 EMAIL_ADDRESS = os.getenv('GMAIL_EMAIL')
-EMAIL_APP_PASSWORD = os.getenv('GMAIL_SENHA')
+EMAIL_APP_PASSWORD = os.getenv('GMAIL_SENHA') # Senhas de app
 
 
 def send_email(subject, text_body):
