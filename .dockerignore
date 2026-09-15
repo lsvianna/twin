@@ -4,4 +4,3 @@ Scripts/
 __pycache__/
 .env
 pyvenv.cfg
-output/

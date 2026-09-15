@@ -26,13 +26,13 @@ def envia_email(email: str, nome: str, notas: str) -> str:
 
 
 perfil_linkedin = ''
-for pagina in PdfReader('linkedin.pdf').pages:
+for pagina in PdfReader('./static/linkedin.pdf').pages:
     texto = pagina.extract_text()
     if texto:
         perfil_linkedin += texto
 
 perfil_lattes = ''
-for pagina in PdfReader('lattes.pdf').pages:
+for pagina in PdfReader('./static/lattes.pdf').pages:
     texto = pagina.extract_text()
     if texto:
         perfil_lattes += texto
